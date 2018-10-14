@@ -53,14 +53,15 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/addToFridge"
+            android:id="@+id/addRating"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_refrigerator"
+            android:drawableTop="@drawable/ic_star_black_24dp"
             android:drawableTint="@android:color/darker_gray"
-            android:text="In den Kühlschrank"
+            android:onClick="onAddRatingClickedListener"
+            android:text="Bewertung hinzufügen"
             android:textColor="@android:color/darker_gray"
             android:textSize="10sp" />
 
