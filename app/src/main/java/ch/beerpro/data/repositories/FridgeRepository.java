@@ -27,13 +27,28 @@ public class FridgeRepository {
 
 
     private static LiveData<List<Fridge>> getFridgesByUser(String userId) {
-        return new FirestoreQueryLiveDataArray<>(FirebaseFirestore.getInstance().collection(Fridge.COLLECTION)
-                .orderBy(Fridge.FIELD_ADDED_AT, Query.Direction.DESCENDING).whereEqualTo(Fridge.FIELD_USER_ID, userId),
-                Fridge.class);
+        return new FirestoreQueryLiveDataArray<>(
+                FirebaseFirestore.getInstance()
+                    .collection(Fridge.COLLECTION)
+                    .orderBy(Fridge.FIELD_ADDED_AT, Query.Direction.DESCENDING)
+                    .whereEqualTo(Fridge.FIELD_USER_ID, userId)
+                , Fridge.class);
     }
 
     public LiveData<List<Fridge>> getFridges(LiveData<String> currentUserId) {
         return switchMap(currentUserId, FridgeRepository::getFridgesByUser);
+    }
+
+    private static LiveData<Fridge> getFridgeFor(Pair<String, String> input) {
+        String userId = input.first;
+        String beerId = input.second;
+        DocumentReference document = FirebaseFirestore.getInstance().collection(Fridge.COLLECTION)
+                .document(Fridge.generateId(userId, beerId));
+        return new FirestoreQueryLiveData<>(document, Fridge.class);
+    }
+
+    public LiveData<Fridge> getFridgeFor(LiveData<String> currentUserId, LiveData<String> beerId){
+        return switchMap(combineLatest(currentUserId, beerId), FridgeRepository::getFridgeFor);
     }
 
 

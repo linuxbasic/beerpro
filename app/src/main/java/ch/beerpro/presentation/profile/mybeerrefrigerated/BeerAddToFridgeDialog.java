@@ -1,24 +1,12 @@
 package ch.beerpro.presentation.profile.mybeerrefrigerated;
 
-import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import ch.beerpro.R;
-import ch.beerpro.domain.models.Beer;
-import ch.beerpro.presentation.details.createrating.CreateRatingViewModel;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +31,7 @@ public class BeerAddToFridgeDialog extends BottomSheetDialogFragment{
         String beerIdToAdd = args.getString(BEER_ID);
         Integer amount = args.getInt(AMOUNT, 6);
         args.putInt(AMOUNT, amount);
+        model.setBeerId(beerIdToAdd);
 
         SeekBar amountSlider = (SeekBar) view.findViewById(R.id.amountSlider);
         TextView amountText = (TextView) view.findViewById(R.id.amountText);
@@ -69,7 +58,7 @@ public class BeerAddToFridgeDialog extends BottomSheetDialogFragment{
             @Override
             public void onClick(View v) {
                 Integer amount = args.getInt(AMOUNT);
-                model.saveFridge(beerIdToAdd, amount);
+                model.updateFridge(amount);
                 self.dismiss();
             }
         });
