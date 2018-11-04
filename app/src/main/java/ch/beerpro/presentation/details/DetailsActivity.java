@@ -4,7 +4,6 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,14 +26,11 @@ import ch.beerpro.domain.models.Beer;
 import ch.beerpro.domain.models.Rating;
 import ch.beerpro.domain.models.Wish;
 import ch.beerpro.presentation.details.createrating.CreateRatingActivity;
-import com.bumptech.glide.Glide;
+import ch.beerpro.presentation.profile.mybeerrefrigerated.BeerAddToFridgeDialog;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static ch.beerpro.presentation.utils.DrawableHelpers.setDrawableTint;
 
 public class DetailsActivity extends AppCompatActivity implements OnRatingLikedListener {
@@ -169,6 +165,16 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
     public void onAddRatingClickedListener(View view){
         actionDialog.hide();
         startRatingActivity(0);
+    }
+
+    @OnClick(R.id.addToFridge)
+    public void onAddToRefrigerator(View view){
+        String beerId = getIntent().getExtras().getString(ITEM_ID);
+        Bundle args = new Bundle();
+        args.putString(BeerAddToFridgeDialog.BEER_ID, beerId);
+        BeerAddToFridgeDialog addToFridgeDialog = new BeerAddToFridgeDialog();
+        addToFridgeDialog.setArguments(args);
+        addToFridgeDialog.show(getSupportFragmentManager(), "add_to_fridege_fragment");
     }
 
     @OnClick(R.id.wishlist)
