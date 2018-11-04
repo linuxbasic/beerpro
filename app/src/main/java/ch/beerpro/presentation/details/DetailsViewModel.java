@@ -1,10 +1,13 @@
 package ch.beerpro.presentation.details;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import ch.beerpro.data.repositories.*;
 import ch.beerpro.domain.models.Beer;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.domain.models.Rating;
 import ch.beerpro.domain.models.Wish;
 import com.google.android.gms.tasks.Task;
@@ -17,6 +20,7 @@ public class DetailsViewModel extends ViewModel implements CurrentUser {
     private final LiveData<Beer> beer;
     private final LiveData<List<Rating>> ratings;
     private final LiveData<Wish> wish;
+    private final LiveData<Fridge> fridge;
 
     private final LikesRepository likesRepository;
     private final WishlistRepository wishlistRepository;
@@ -25,6 +29,7 @@ public class DetailsViewModel extends ViewModel implements CurrentUser {
         // TODO We should really be injecting these!
         BeersRepository beersRepository = new BeersRepository();
         RatingsRepository ratingsRepository = new RatingsRepository();
+        FridgeRepository fridgeRepository = new FridgeRepository();
         likesRepository = new LikesRepository();
         wishlistRepository = new WishlistRepository();
 
@@ -32,6 +37,7 @@ public class DetailsViewModel extends ViewModel implements CurrentUser {
         beer = beersRepository.getBeer(beerId);
         wish = wishlistRepository.getMyWishForBeer(currentUserId, getBeer());
         ratings = ratingsRepository.getRatingsForBeer(beerId);
+        fridge =  fridgeRepository.getFridgeFor(currentUserId, beerId);
         currentUserId.setValue(getCurrentUser().getUid());
     }
 
@@ -42,6 +48,11 @@ public class DetailsViewModel extends ViewModel implements CurrentUser {
     public LiveData<Wish> getWish() {
         return wish;
     }
+
+    public LiveData<Fridge> getFridge() {
+        Log.wtf("linus", beerId.getValue());
+        Log.wtf("linus", beerId.getValue());
+        return fridge; }
 
     public LiveData<List<Rating>> getRatings() {
         return ratings;

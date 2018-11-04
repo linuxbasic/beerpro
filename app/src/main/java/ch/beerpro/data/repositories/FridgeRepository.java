@@ -1,5 +1,6 @@
 package ch.beerpro.data.repositories;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.google.android.gms.tasks.Task;
@@ -42,8 +43,10 @@ public class FridgeRepository {
     private static LiveData<Fridge> getFridgeFor(Pair<String, String> input) {
         String userId = input.first;
         String beerId = input.second;
+        String fridgeId = Fridge.generateId(userId, beerId);
+        Log.wtf("linus", fridgeId);
         DocumentReference document = FirebaseFirestore.getInstance().collection(Fridge.COLLECTION)
-                .document(Fridge.generateId(userId, beerId));
+                .document(fridgeId);
         return new FirestoreQueryLiveData<>(document, Fridge.class);
     }
 

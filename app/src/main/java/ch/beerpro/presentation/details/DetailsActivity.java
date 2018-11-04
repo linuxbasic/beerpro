@@ -4,8 +4,10 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -23,6 +25,7 @@ import butterknife.OnClick;
 import ch.beerpro.GlideApp;
 import ch.beerpro.R;
 import ch.beerpro.domain.models.Beer;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.domain.models.Rating;
 import ch.beerpro.domain.models.Wish;
 import ch.beerpro.presentation.details.createrating.CreateRatingActivity;
@@ -70,6 +73,9 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
     @BindView(R.id.addRatingBar)
     RatingBar addRatingBar;
 
+    @BindView(R.id.addToFridge)
+    Button addToFridge;
+
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
@@ -105,6 +111,7 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
         model.getBeer().observe(this, this::updateBeer);
         model.getRatings().observe(this, this::updateRatings);
         model.getWish().observe(this, this::toggleWishlistView);
+        model.getFridge().observe(this, this::updateFridge);
 
         recyclerView.setAdapter(adapter);
         addRatingBar.setOnRatingBarChangeListener(this::addNewRating);
@@ -129,6 +136,13 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
     @OnClick(R.id.actionsButton)
     public void showBottomSheetDialog() {
         actionDialog.show();
+    }
+
+    private void updateFridge(Fridge fridge){
+        if(fridge.getAmount() == 0){
+            addToFridge.setText(R.string.in_den_k_hlschrank);
+        }
+        addToFridge.setText(R.string.im_k_hlschrank_anpassen);
     }
 
     private void updateBeer(Beer item) {
@@ -169,9 +183,15 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
 
     @OnClick(R.id.addToFridge)
     public void onAddToRefrigerator(View view){
-        String beerId = getIntent().getExtras().getString(ITEM_ID);
+        String beerId = model.getBeer().getValue().getId();
+        Fridge fridge = model.getFridge().getValue();
+
         Bundle args = new Bundle();
         args.putString(BeerAddToFridgeDialog.BEER_ID, beerId);
+        if(fridge != null){
+            args.putInt(BeerAddToFridgeDialog.AMOUNT, fridge.getAmount());
+        }
+
         BeerAddToFridgeDialog addToFridgeDialog = new BeerAddToFridgeDialog();
         addToFridgeDialog.setArguments(args);
         addToFridgeDialog.show(getSupportFragmentManager(), "add_to_fridege_fragment");

@@ -229,7 +229,7 @@
                                 android:layout_weight="1"
                                 android:drawableTop="@drawable/ic_refrigerator"
                                 android:drawableTint="@android:color/darker_gray"
-                                android:text="In den Kühlschrank"
+                                android:text="@string/in_den_k_hlschrank"
                                 android:textColor="@android:color/darker_gray"
                                 android:textSize="10sp" />
 
