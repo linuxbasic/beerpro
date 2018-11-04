@@ -34,7 +34,7 @@ public class BeerAddToFridgeDialog extends BottomSheetDialogFragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_beer_list_dialog, container,
+        View view = inflater.inflate(R.layout.fragment_add_beer_to_fridge_dialog, container,
                 false);
 
         model = ViewModelProviders.of(this).get(FridgeViewModel.class);
