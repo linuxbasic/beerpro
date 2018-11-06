@@ -11,7 +11,7 @@ Student: Linus Basig
 
 - [x] Zum Kühlschrank hinzufügen von Beer Detail view
 - [x] Zum Kühlschrank hinzufügen von My Beers view
-- [ ] Zum Kühlschrank hinzufügen von Favorites view
+- [x] Zum Kühlschrank hinzufügen von Favorites view
 - [ ] Kühlschrankinhalt anzeigen
 - [ ] In Meine Biere anzeigen
 

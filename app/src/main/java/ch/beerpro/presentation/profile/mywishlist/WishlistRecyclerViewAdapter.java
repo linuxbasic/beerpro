@@ -16,20 +16,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ch.beerpro.GlideApp;
 import ch.beerpro.R;
-import ch.beerpro.presentation.utils.EntityPairDiffItemCallback;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.domain.models.Beer;
 import ch.beerpro.domain.models.Wish;
-import com.bumptech.glide.Glide;
+import ch.beerpro.presentation.utils.EntityTripleDiffItemCallback;
 import com.bumptech.glide.request.RequestOptions;
+
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.text.DateFormat;
 
 
-public class WishlistRecyclerViewAdapter extends ListAdapter<Pair<Wish, Beer>, WishlistRecyclerViewAdapter.ViewHolder> {
+public class WishlistRecyclerViewAdapter extends ListAdapter<Triple<Wish, Beer, Fridge>, WishlistRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "WishlistRecyclerViewAda";
 
-    private static final DiffUtil.ItemCallback<Pair<Wish, Beer>> DIFF_CALLBACK = new EntityPairDiffItemCallback<>();
+    private static final DiffUtil.ItemCallback<Triple<Wish, Beer, Fridge>> DIFF_CALLBACK = new EntityTripleDiffItemCallback();
 
     private final OnWishlistItemInteractionListener listener;
 
@@ -48,8 +50,8 @@ public class WishlistRecyclerViewAdapter extends ListAdapter<Pair<Wish, Beer>, W
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        Pair<Wish, Beer> item = getItem(position);
-        holder.bind(item.first, item.second, listener);
+        Triple<Wish, Beer, Fridge> item = getItem(position);
+        holder.bind(item.getLeft(), item.getMiddle(), item.getRight(), listener);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,12 +80,15 @@ public class WishlistRecyclerViewAdapter extends ListAdapter<Pair<Wish, Beer>, W
         @BindView(R.id.removeFromWishlist)
         Button remove;
 
+        @BindView(R.id.manageFridgeButton)
+        Button manageFridgeButton;
+
         ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Wish wish, Beer item, OnWishlistItemInteractionListener listener) {
+        void bind(Wish wish, Beer item, Fridge fridge, OnWishlistItemInteractionListener listener) {
             name.setText(item.getName());
             manufacturer.setText(item.getManufacturer());
             category.setText(item.getCategory());
@@ -94,6 +99,7 @@ public class WishlistRecyclerViewAdapter extends ListAdapter<Pair<Wish, Beer>, W
             ratingBar.setRating(item.getAvgRating());
             numRatings.setText(itemView.getResources().getString(R.string.fmt_num_ratings, item.getNumRatings()));
             itemView.setOnClickListener(v -> listener.onMoreClickedListener(photo, item));
+            manageFridgeButton.setOnClickListener(v -> listener.onFridgeClickedListener(item));
 
             String formattedDate =
                     DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT).format(wish.getAddedAt());

@@ -4,6 +4,7 @@ import android.util.Pair;
 import androidx.lifecycle.LiveData;
 import ch.beerpro.domain.models.Beer;
 import ch.beerpro.domain.models.Entity;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.domain.models.Wish;
 import ch.beerpro.domain.utils.FirestoreQueryLiveData;
 import ch.beerpro.domain.utils.FirestoreQueryLiveDataArray;
@@ -11,6 +12,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,16 +60,20 @@ public class WishlistRepository {
         });
     }
 
-    public LiveData<List<Pair<Wish, Beer>>> getMyWishlistWithBeers(LiveData<String> currentUserId,
-                                                                   LiveData<List<Beer>> allBeers) {
-        return map(combineLatest(getMyWishlist(currentUserId), map(allBeers, Entity::entitiesById)), input -> {
-            List<Wish> wishes = input.first;
-            HashMap<String, Beer> beersById = input.second;
+    public LiveData<List<Triple<Wish, Beer,Fridge>>> getMyWishlistWithBeers(LiveData<String> currentUserId,
+                                                                   LiveData<List<Beer>> allBeers,
+                                                                   LiveData<List<Fridge>> fridges) {
+        return map(combineLatest(getMyWishlist(currentUserId), map(allBeers, Entity::entitiesById), map(fridges, Entity::entitiesById)), input -> {
+            List<Wish> wishes = input.getLeft();
+            HashMap<String, Beer> beersById = input.getMiddle();
+            HashMap<String, Fridge> fridgeById = input.getRight();
 
-            ArrayList<Pair<Wish, Beer>> result = new ArrayList<>();
+            ArrayList<Triple<Wish, Beer, Fridge>> result = new ArrayList<>();
             for (Wish wish : wishes) {
-                Beer beer = beersById.get(wish.getBeerId());
-                result.add(Pair.create(wish, beer));
+                String beerId = wish.getBeerId();
+                Beer beer = beersById.get(beerId);
+                Fridge fridge = fridgeById.get(beerId);
+                result.add(Triple.of(wish, beer, fridge));
             }
             return result;
         });

@@ -7,6 +7,9 @@ import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
+import org.apache.commons.lang3.tuple.Triple;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,8 +19,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ch.beerpro.R;
 import ch.beerpro.domain.models.Beer;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.domain.models.Wish;
 import ch.beerpro.presentation.details.DetailsActivity;
+import ch.beerpro.presentation.profile.mybeerrefrigerated.BeerAddToFridgeDialog;
 import lombok.val;
 
 import java.util.List;
@@ -58,7 +63,7 @@ public class WishlistActivity extends AppCompatActivity implements OnWishlistIte
 
     }
 
-    private void updateWishlist(List<Pair<Wish, Beer>> entries) {
+    private void updateWishlist(List<Triple<Wish, Beer, Fridge>> entries) {
         adapter.submitList(entries);
         if (entries.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
@@ -92,5 +97,21 @@ public class WishlistActivity extends AppCompatActivity implements OnWishlistIte
     @Override
     public void onWishClickedListener(Beer beer) {
         model.toggleItemInWishlist(beer.getId());
+    }
+
+    @Override
+    public void onFridgeClickedListener(Beer beer) {
+        String beerId = beer.getId();
+        Fridge fridge = model.getFridge(beerId);
+
+        Bundle args = new Bundle();
+        args.putString(BeerAddToFridgeDialog.BEER_ID, beerId);
+        if(fridge != null){
+            args.putInt(BeerAddToFridgeDialog.AMOUNT, fridge.getAmount());
+        }
+
+        BeerAddToFridgeDialog addToFridgeDialog = new BeerAddToFridgeDialog();
+        addToFridgeDialog.setArguments(args);
+        addToFridgeDialog.show(getSupportFragmentManager(), "add_to_fridege_fragment");
     }
 }

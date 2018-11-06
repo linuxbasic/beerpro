@@ -1,6 +1,9 @@
 package ch.beerpro.presentation.utils;
 
 import android.util.Pair;
+
+import org.apache.commons.lang3.tuple.Triple;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import ch.beerpro.domain.models.Entity;
