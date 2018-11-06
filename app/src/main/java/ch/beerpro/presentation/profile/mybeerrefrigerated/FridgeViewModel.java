@@ -1,11 +1,10 @@
 package ch.beerpro.presentation.profile.mybeerrefrigerated;
 
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import android.util.Pair;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
 import androidx.lifecycle.LiveData;
@@ -15,10 +14,10 @@ import ch.beerpro.data.repositories.BeersRepository;
 import ch.beerpro.data.repositories.CurrentUser;
 import ch.beerpro.data.repositories.FridgeRepository;
 import ch.beerpro.domain.models.Beer;
+import ch.beerpro.domain.models.Entity;
 import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.presentation.utils.EntityClassSnapshotParser;
-
-import static androidx.lifecycle.Transformations.switchMap;
+import static androidx.lifecycle.Transformations.map;
 import static ch.beerpro.domain.utils.LiveDataExtensions.combineLatest;
 
 public class FridgeViewModel extends ViewModel implements CurrentUser {
@@ -28,19 +27,36 @@ public class FridgeViewModel extends ViewModel implements CurrentUser {
     private final MutableLiveData<String> beerId;
 
     private final FridgeRepository fridgeRepository;
+    private final BeersRepository beersRepository;
     private final LiveData<Beer> beer;
     private final LiveData<Fridge> fridge;
+    private final LiveData<List<Pair<Beer, Fridge>>> fridges;
     private EntityClassSnapshotParser<Fridge> parser = new EntityClassSnapshotParser<>(Fridge.class);
 
     public FridgeViewModel() {
-        BeersRepository beersRepository = new BeersRepository();
+        beersRepository = new BeersRepository();
         fridgeRepository = new FridgeRepository();
 
         beerId =  new MutableLiveData<>();
         currentUserId = new MutableLiveData<>();
-        currentUserId.setValue(getCurrentUser().getUid());
         beer = beersRepository.getBeer(beerId);
         fridge = fridgeRepository.getFridgeFor(currentUserId, beerId);
+        fridges = map(combineLatest(fridgeRepository.getFridges(currentUserId), map(beersRepository.getAllBeers(), Entity::entitiesById)), FridgeViewModel::addBeer);
+
+
+        currentUserId.setValue(getCurrentUser().getUid());
+    }
+
+    private static List<Pair<Beer, Fridge>> addBeer(Pair<List<Fridge>, HashMap<String, Beer>> data){
+        List<Fridge> fridges = data.first;
+        HashMap<String, Beer> beerMap = data.second;
+        ArrayList<Pair<Beer, Fridge>> out = new ArrayList();
+
+        for (Fridge fridge : fridges){
+            String beerId = fridge.getBeerId();
+            out.add(Pair.create(beerMap.get(beerId), fridge));
+        }
+        return out;
     }
 
     public void setBeerId(String beerId){
@@ -49,6 +65,23 @@ public class FridgeViewModel extends ViewModel implements CurrentUser {
 
     public LiveData<Fridge> getFridge(){
         return fridge;
+    }
+
+    public Fridge getFridge(String beerId){
+        List<Pair<Beer, Fridge>> allFridgesPairs = fridges.getValue();
+        if(allFridgesPairs != null){
+            for (Pair<Beer, Fridge> pair : allFridgesPairs) {
+                Fridge fridge = pair.second;
+                if(beerId.equals(fridge.getBeerId())){
+                    return fridge;
+                }
+            }
+        }
+        return null;
+    }
+
+    public LiveData<List<Pair<Beer, Fridge>>> getBeersWithFridge(){
+        return fridges;
     }
 
     public Task<Fridge> updateFridge(Integer amount){

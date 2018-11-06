@@ -73,6 +73,10 @@ public class MainViewModel extends ViewModel implements CurrentUser {
         return myWishlist;
     }
 
+    public LiveData<List<Fridge>> getMyFridges() {
+        return myFridges;
+    }
+
     public LiveData<List<String>> getBeerCategories() {
         return beersRepository.getBeerCategories();
     }
