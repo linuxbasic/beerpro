@@ -55,19 +55,29 @@ public class FridgeViewModel extends ViewModel implements CurrentUser {
         String id = Fridge.generateId(currentUserId.getValue(), beerId.getValue());
         Fridge newFridge = new Fridge(currentUserId.getValue(), beerId.getValue(), new Date(), amount);
 
-        return FirebaseFirestore.getInstance().collection(Fridge.COLLECTION).document(id).set(newFridge).continueWithTask(task -> {
-            if (task.isSuccessful()) {
-                return FirebaseFirestore.getInstance().collection(Fridge.COLLECTION).document(id).get();
-            } else {
-                throw task.getException();
-            }
-        }).continueWithTask(task -> {
+        if (amount > 0){
+            return FirebaseFirestore.getInstance().collection(Fridge.COLLECTION).document(id).set(newFridge).continueWithTask(task -> {
+                if (task.isSuccessful()) {
+                    return FirebaseFirestore.getInstance().collection(Fridge.COLLECTION).document(id).get();
+                } else {
+                    throw task.getException();
+                }
+            }).continueWithTask(task -> {
 
+                if (task.isSuccessful()) {
+                    return Tasks.forResult(parser.parseSnapshot(task.getResult()));
+                } else {
+                    throw task.getException();
+                }
+            });
+        }
+        return FirebaseFirestore.getInstance().collection(Fridge.COLLECTION).document(id).delete().continueWithTask(task -> {
             if (task.isSuccessful()) {
-                return Tasks.forResult(parser.parseSnapshot(task.getResult()));
+                return null;
             } else {
                 throw task.getException();
             }
         });
+
     }
 }
