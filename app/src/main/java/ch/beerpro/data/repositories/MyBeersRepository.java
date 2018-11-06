@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData;
 import ch.beerpro.domain.models.Beer;
 import ch.beerpro.domain.models.Entity;
 import ch.beerpro.domain.models.Fridge;
+import ch.beerpro.domain.models.MyBeerFromFridge;
 import ch.beerpro.domain.models.Rating;
 import ch.beerpro.domain.models.Wish;
 import ch.beerpro.domain.models.MyBeer;
@@ -77,6 +78,17 @@ public class MyBeersRepository extends MediatorLiveData<MyBeerUpdate> {
                 // if the beer is already on the wish list, don't add it again
             } else {
                 result.add(new MyBeerFromRating(rating, update.beerMap.get(beerId)));
+                // we also don't want to see a rated beer twice
+                beersAlreadyOnTheList.add(beerId);
+            }
+        }
+
+        for (Fridge fridge : update.fridges) {
+            String beerId = fridge.getBeerId();
+            if (beersAlreadyOnTheList.contains(beerId)) {
+                // if the beer is already on the wish list, don't add it again
+            } else {
+                result.add(new MyBeerFromFridge(fridge, update.beerMap.get(beerId)));
                 // we also don't want to see a rated beer twice
                 beersAlreadyOnTheList.add(beerId);
             }
