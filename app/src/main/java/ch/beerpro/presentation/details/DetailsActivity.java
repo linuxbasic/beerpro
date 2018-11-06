@@ -73,8 +73,8 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
     @BindView(R.id.addRatingBar)
     RatingBar addRatingBar;
 
-    @BindView(R.id.addToFridge)
-    Button addToFridge;
+    @BindView(R.id.manageFridgeButton)
+    Button manageFridgeButton;
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -140,9 +140,9 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
 
     private void updateFridge(Fridge fridge){
         if(fridge.getAmount() == 0){
-            addToFridge.setText(R.string.in_den_k_hlschrank);
+            manageFridgeButton.setText(R.string.in_den_k_hlschrank);
         }
-        addToFridge.setText(R.string.im_k_hlschrank_anpassen);
+        manageFridgeButton.setText(R.string.im_k_hlschrank_anpassen);
     }
 
     private void updateBeer(Beer item) {
@@ -181,7 +181,7 @@ public class DetailsActivity extends AppCompatActivity implements OnRatingLikedL
         startRatingActivity(0);
     }
 
-    @OnClick(R.id.addToFridge)
+    @OnClick(R.id.manageFridgeButton)
     public void onAddToRefrigerator(View view){
         String beerId = model.getBeer().getValue().getId();
         Fridge fridge = model.getFridge().getValue();

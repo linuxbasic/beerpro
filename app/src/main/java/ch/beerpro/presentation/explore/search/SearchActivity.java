@@ -89,6 +89,11 @@ public class SearchActivity extends AppCompatActivity
         handleSearch(text);
     }
 
+    @Override
+    public void onFridgeClickedListener(Beer item){
+
+    }
+
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {

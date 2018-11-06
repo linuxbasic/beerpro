@@ -14,7 +14,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import ch.beerpro.R;
 import ch.beerpro.domain.models.Beer;
+import ch.beerpro.domain.models.Fridge;
 import ch.beerpro.presentation.details.DetailsActivity;
+import ch.beerpro.presentation.profile.mybeerrefrigerated.BeerAddToFridgeDialog;
 
 public class MyBeersActivity extends AppCompatActivity implements OnMyBeerItemInteractionListener {
 
@@ -84,5 +86,20 @@ public class MyBeersActivity extends AppCompatActivity implements OnMyBeerItemIn
     @Override
     public void onWishClickedListener(Beer item) {
         model.toggleItemInWishlist(item.getId());
+    }
+
+    public void onFridgeClickedListener(Beer item) {
+        String beerId = item.getId();
+        Fridge fridge = model.getFridge(beerId);
+
+        Bundle args = new Bundle();
+        args.putString(BeerAddToFridgeDialog.BEER_ID, beerId);
+        if(fridge != null){
+            args.putInt(BeerAddToFridgeDialog.AMOUNT, fridge.getAmount());
+        }
+
+        BeerAddToFridgeDialog addToFridgeDialog = new BeerAddToFridgeDialog();
+        addToFridgeDialog.setArguments(args);
+        addToFridgeDialog.show(getSupportFragmentManager(), "add_to_fridege_fragment");
     }
 }
