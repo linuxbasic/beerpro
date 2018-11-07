@@ -32,6 +32,36 @@ public class LiveDataExtensions {
         };
     }
 
+    public static <A, B, C> LiveData<Triple<A, B, C>> zip(LiveData<A> as, LiveData<B> bs, LiveData<C> cs) {
+        return new MediatorLiveData<Triple<A, B, C>>() {
+
+            A lastA = null;
+            B lastB = null;
+            C lastC = null;
+
+            {
+                {
+                    addSource(as, (A a) -> {
+                        lastA = a;
+                        update();
+                    });
+                    addSource(bs, (B b) -> {
+                        lastB = b;
+                        update();
+                    });
+                    addSource(cs, (C c) -> {
+                        lastC = c;
+                        update();
+                    });
+                }
+            }
+
+            private void update() {
+                this.setValue(Triple.of(lastA, lastB, lastC));
+            }
+        };
+    }
+
     public static <A, B> LiveData<Pair<A, B>> combineLatest(LiveData<A> as, LiveData<B> bs) {
         return new MediatorLiveData<Pair<A, B>>() {
 
