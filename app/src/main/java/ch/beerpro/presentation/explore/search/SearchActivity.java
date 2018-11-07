@@ -74,6 +74,13 @@ public class SearchActivity extends AppCompatActivity
         searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         myBeersViewModel = ViewModelProviders.of(this).get(MyBeersViewModel.class);
         searchViewModel.getFilteredBeers().observe(this, this::updateFilters);
+        filterChips.setOnCheckedChangeListener(this::onCategoryFilterChanged);
+    }
+
+    private void onCategoryFilterChanged(ChipGroup group, @IdRes int checkedId){
+        Chip checkedChip = (Chip) group.findViewById(checkedId);
+        String category = (String) checkedChip.getText();
+        Log.wtf("Linus", "chipChecked "+category);
     }
 
     private void handleSearch(String text) {
