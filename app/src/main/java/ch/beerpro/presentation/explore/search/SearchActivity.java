@@ -43,6 +43,7 @@ public class SearchActivity extends AppCompatActivity
     private MyBeersViewModel myBeersViewModel;
     private TabLayout tabLayout;
     private ChipGroup filterChips;
+    private String filterCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +80,15 @@ public class SearchActivity extends AppCompatActivity
 
     private void onCategoryFilterChanged(ChipGroup group, @IdRes int checkedId){
         Chip checkedChip = (Chip) group.findViewById(checkedId);
+        if(checkedChip == null){
+            return;
+        }
         String category = (String) checkedChip.getText();
         Log.wtf("Linus", "chipChecked "+category);
+        filterCategory = category;
+        searchViewModel.setCategoryFilter(category);
+        myBeersViewModel.setCategoryFilter(category);
+        adapter.notifyDataSetChanged();
     }
 
     private void handleSearch(String text) {
@@ -103,6 +111,7 @@ public class SearchActivity extends AppCompatActivity
             Chip categoryChip = new Chip(filterChips.getContext());
             categoryChip.setText(category);
             categoryChip.setCheckable(true);
+            categoryChip.setChecked(category.equals(filterCategory));
             filterChips.addView(categoryChip);
         }
     }

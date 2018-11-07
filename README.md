@@ -15,6 +15,13 @@ Student: Linus Basig
 - [x] Kühlschrankinhalt anzeigen
 - [x] In Meine Biere anzeigen
 
+###  Entdecken nach Kategorien (4P)
+
+- [x] Display filter chips
+- [x] Filter with search term
+- [ ] Filter with no search term
+- [ ] Reset filter
+
 
 ## Useful Links
 

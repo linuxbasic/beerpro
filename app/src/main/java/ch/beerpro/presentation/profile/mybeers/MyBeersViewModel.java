@@ -13,6 +13,8 @@ import ch.beerpro.domain.models.Wish;
 import ch.beerpro.domain.models.MyBeer;
 import com.google.common.base.Strings;
 
+import org.apache.commons.lang3.tuple.Triple;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +26,7 @@ public class MyBeersViewModel extends ViewModel implements CurrentUser {
 
     private static final String TAG = "MyBeersViewModel";
     private final MutableLiveData<String> searchTerm = new MutableLiveData<>();
+    private final MutableLiveData<String> categoryFilter = new MutableLiveData<>();
 
     private final WishlistRepository wishlistRepository;
     private final LiveData<List<MyBeer>> myFilteredBeers;
@@ -50,24 +53,26 @@ public class MyBeersViewModel extends ViewModel implements CurrentUser {
         MyBeersRepository myBeersRepository = new MyBeersRepository(allBeers, myWishlist, myRatings, fridges);
         myBeers = myBeersRepository.getMyBeers();
 
-        myFilteredBeers = map(zip(searchTerm, myBeers), MyBeersViewModel::filter);
+        myFilteredBeers =  map(zip(searchTerm, categoryFilter, myBeers), MyBeersViewModel::filter);
 
         currentUserId.setValue(getCurrentUser().getUid());
     }
 
-    private static List<MyBeer> filter(Pair<String, List<MyBeer>> input) {
-        String searchTerm1 = input.first;
-        List<MyBeer> myBeers = input.second;
-        if (Strings.isNullOrEmpty(searchTerm1)) {
-            return myBeers;
-        }
-        if (myBeers == null) {
+    private static List<MyBeer> filter(Triple<String, String, List<MyBeer>> input) {
+        String searchTermValue = input.getLeft();
+        String categoryFilterValue = input.getMiddle();
+        List<MyBeer> allBeers = input.getRight();
+
+        if (allBeers == null && categoryFilterValue == null) {
             return Collections.emptyList();
         }
+
         ArrayList<MyBeer> filtered = new ArrayList<>();
-        for (MyBeer beer : myBeers) {
-            if (beer.getBeer().getName().toLowerCase().contains(searchTerm1.toLowerCase())) {
-                filtered.add(beer);
+        for (MyBeer beer : allBeers) {
+            if (Strings.isNullOrEmpty(searchTermValue) || beer.getBeer().getName().toLowerCase().contains(searchTermValue.toLowerCase())) {
+                if (Strings.isNullOrEmpty(categoryFilterValue) || categoryFilterValue.equals(beer.getBeer().getCategory())) {
+                    filtered.add(beer);
+                }
             }
         }
         return filtered;
@@ -95,5 +100,8 @@ public class MyBeersViewModel extends ViewModel implements CurrentUser {
 
     public void setSearchTerm(String searchTerm) {
         this.searchTerm.setValue(searchTerm);
+    }
+    public void setCategoryFilter(String categoryFilter) {
+        this.categoryFilter.setValue(categoryFilter);
     }
 }
